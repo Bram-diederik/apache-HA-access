@@ -1,0 +1,10 @@
+alias: apache access init
+description: ""
+trigger:
+  - platform: homeassistant
+    event: start
+condition: []
+action:
+  - service: shell_command.apache_init
+    data: {}
+mode: single

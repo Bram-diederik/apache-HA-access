@@ -1,0 +1,10 @@
+shell_command:
+   apache_allow: /config/apache_grant.sh allow "{{states('var.apache_ip')}}"
+   apache_disallow: /config/apache_grant.sh disallow "{{states('var.apache_ip')}}"
+   apache_init: /config/apache_grant.sh init 
+
+
+var:
+  apache_ip:
+    friendly_name: "ip to use for apache access"
+    initial_value: "null"

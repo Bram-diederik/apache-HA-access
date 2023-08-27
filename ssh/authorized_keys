@@ -1,0 +1,1 @@
+command="sudo /usr/local/bin/apache-allow.sh $(cat)",restrict ssh-rsa AAAAAAAAAAAAAAAAAAAAAAAAAAAA

@@ -1,0 +1,58 @@
+type: vertical-stack
+cards:
+  - type: custom:auto-entities
+    card:
+      type: entities
+      title: new allow access
+    filter:
+      include:
+        - entity_id: sensor.apache_access_*
+          state: new
+          options:
+            tap_action:
+              action: call-service
+              service: script.apache_access_allow
+              data:
+                entity_id: this.entity_id
+  - type: custom:auto-entities
+    card:
+      type: entities
+      title: new disallow access
+    filter:
+      include:
+        - entity_id: sensor.apache_access_*
+          state: new
+          options:
+            tap_action:
+              action: call-service
+              service: script.apache_access_disallow
+              data:
+                entity_id: this.entity_id
+  - type: custom:auto-entities
+    card:
+      type: entities
+      title: no access
+    filter:
+      include:
+        - entity_id: sensor.apache_access_*
+          state: disallow
+          options:
+            tap_action:
+              action: call-service
+              service: script.apache_access_allow
+              data:
+                entity_id: this.entity_id
+  - type: custom:auto-entities
+    card:
+      type: entities
+      title: access
+    filter:
+      include:
+        - entity_id: sensor.apache_access_*
+          state: allow
+          options:
+            tap_action:
+              action: call-service
+              service: script.apache_access_disallow
+              data:
+                entity_id: this.entity_id

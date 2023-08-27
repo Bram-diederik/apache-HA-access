@@ -1,0 +1,9 @@
+alias: Apache access allow
+sequence:
+  - service: var.set
+    data:
+      entity_id: var.apache_ip
+      value: "{{state_attr(entity_id,'ip_address')}}"
+  - service: shell_command.apache_allow
+    data: {}
+mode: single
