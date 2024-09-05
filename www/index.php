@@ -1,5 +1,5 @@
 <?php
-//this php script adds the incomming ip address to home assistant to be whitelisted or blacklisted.
+//this php script adds or updates the incomming ip address to home assistant to be allowed or denied.
 
 $remoteAddr = $_SERVER["REMOTE_ADDR"];
 exec("sudo /usr/local/bin/apache-allow.sh check $remoteAddr"); 

@@ -1,5 +1,5 @@
 <?php
-//This php page adds every not whitelisted ip to the blacklist that reaches this page.
+//This php page adds every not allowed ip to the deny list.
 
 $remoteAddr = $_SERVER["REMOTE_ADDR"];
 exec("sudo /usr/local/bin/apache-allow.sh honey $remoteAddr");
