@@ -5,8 +5,8 @@ ALLOWED_FILE="/etc/apache-allow/allowed_ips.conf"
 DISALLOWED_FILE="/etc/apache-allow/disallowed_ips.conf"
 NEW_FILE="/etc/apache-allow/new_ips.conf"
 
-HA_TOKEN="ha token";
-HA_SITE="http://homeassistant:8123";
+HA_TOKEN="token"
+HA_SITE="hasswebsite";
 
 ha_set() {
 
@@ -14,12 +14,18 @@ ha_set() {
 # Replace these variables with the desired IP and hostname
 IP=$1
 HOSTNAME=$2
-STATE=$3
+if [ -z "$HOSTNAME" ]; then
+  HOSTNAME=$IP
+fi
 
+STATE=$3
+IP_SAVE=${IP//[.\:]/_}
 # Create the entity using the Home Assistant API
+echo "$IP_SAVE";
+
 curl -X POST -H "Authorization: Bearer $HA_TOKEN" -H "Content-Type: application/json" \
      -d '{
-         "object_id": "apache-access-'$IP'",
+         "object_id": "apache-access-'$IP_SAVE'",
          "name": "'$HOSTNAME'",
          "state": "'$STATE'",
          "attributes": {
@@ -29,9 +35,14 @@ curl -X POST -H "Authorization: Bearer $HA_TOKEN" -H "Content-Type: application/
          },
          "icon": "mdi:web"
      }' \
-     "$HA_SITE/api/states/sensor.apache_access_${IP//./_}"
+      "$HA_SITE/api/states/sensor.apache_access_$IP_SAVE"
 
 
+}
+
+purge() {
+    grep -Fvxf "$ALLOWED_FILE" "$NEW_FILE" >> "$DISALLOWED_FILE"
+     : > "$NEW_FILE"  # Clear the new file after processing
 }
 
 
@@ -50,15 +61,16 @@ init() {
         ha_set "$ip" "$hostname" "allow"
     done < "$ALLOWED_FILE"
 
+    # I no longer send the whole blacklist it will be to many ips very fast
     # Read and process disallowed IPs
-    while IFS= read -r line; do
-        ip=$(echo "$line" | awk '{print $1}')
-        hostname=$(echo "$line" | awk '{$1=""; print $0}' | xargs)
-             if [ -z "$hostname" ]; then
-         hostname="$ip"
-       fi
-       ha_set "$ip" "$hostname" "disallow"
-    done < "$DISALLOWED_FILE"
+    # while IFS= read -r line; do
+    #    ip=$(echo "$line" | awk '{print $1}')
+    #    hostname=$(echo "$line" | awk '{$1=""; print $0}' | xargs)
+    #         if [ -z "$hostname" ]; then
+    #     hostname="$ip"
+    #   fi
+    #   ha_set "$ip" "$hostname" "disallow"
+    #done < "$DISALLOWED_FILE"
 
     # Read and process new IPs
     while IFS= read -r line; do
@@ -160,10 +172,13 @@ case "$1" in
     "init")
         init
         ;;
+    "purge")
+        purge
+        ;;
 
     *)
         echo "Usage: $0 [check|allow|disallow|honey] <ip>"
-        echo "Usage: $0 [init]"
+        echo "Usage: $0 [init|purge]"
         exit 1
         ;;
 esac
