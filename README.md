@@ -9,12 +9,12 @@ I noticed loads of systems make connection to my websites. Even I'm trying hard 
 This project contains 3 apache2 website snippets. 
 
 # allow-list-site.conf
-This example needs a whitelisted ip to operate. 
+This example needs an allowed ip to operate. 
 new ip's are send to home assistant where access can be granted or denied.
 
 # deny-list-site.conf
-This example allows all access unless the ip is on the blacklist.
+This example allows all access unless the ip is on the denylist.
 
 # honey-pot.conf
-This example automaticly adds the ip to the blacklist.
-use a website that should not be known for the public. and automaticly blacklists loads of scanners. 
+This example automatically adds the ip to the denylist.
+use a website that should not be known for the public. and automaticly denies loads of scanners. 
