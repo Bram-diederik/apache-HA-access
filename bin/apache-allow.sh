@@ -5,8 +5,8 @@ ALLOWED_FILE="/etc/apache-allow/allowed_ips.conf"
 DISALLOWED_FILE="/etc/apache-allow/disallowed_ips.conf"
 NEW_FILE="/etc/apache-allow/new_ips.conf"
 
-HA_TOKEN="token"
-HA_SITE="hasswebsite";
+HA_TOKEN="your token"
+HA_SITE="homeassistant.local";
 
 ha_set() {
 
@@ -20,8 +20,10 @@ fi
 
 STATE=$3
 IP_SAVE=${IP//[.\:]/_}
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S+00:00")
 # Create the entity using the Home Assistant API
 echo "$IP_SAVE";
+echo "$TIMESTAMP";
 
 curl -X POST -H "Authorization: Bearer $HA_TOKEN" -H "Content-Type: application/json" \
      -d '{
@@ -31,7 +33,8 @@ curl -X POST -H "Authorization: Bearer $HA_TOKEN" -H "Content-Type: application/
          "attributes": {
              "friendly_name": "'$HOSTNAME'",
              "ip_address": "'$IP'",
-             "hostname": "'$HOSTNAME'"
+             "hostname": "'$HOSTNAME'",
+             "timestamp": "'$TIMESTAMP'"
          },
          "icon": "mdi:web"
      }' \
@@ -61,9 +64,8 @@ init() {
         ha_set "$ip" "$hostname" "allow"
     done < "$ALLOWED_FILE"
 
-    # I no longer send the whole blacklist it will be to many ips very fast
     # Read and process disallowed IPs
-    # while IFS= read -r line; do
+    #while IFS= read -r line; do
     #    ip=$(echo "$line" | awk '{print $1}')
     #    hostname=$(echo "$line" | awk '{$1=""; print $0}' | xargs)
     #         if [ -z "$hostname" ]; then
@@ -94,7 +96,8 @@ check_ip() {
     if grep -q "^$ip" "$ALLOWED_FILE"; then
         echo "allowed"
     elif grep -q "^$ip" "$DISALLOWED_FILE"; then
-        echo "disallowed"
+         ha_set "$ip" "$hostname" "disallow"
+         echo "disallowed"
     else
        if grep -q "^$ip" "$NEW_FILE"; then
           echo "new"
