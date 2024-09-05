@@ -8,11 +8,11 @@ I noticed loads of systems make connection to my websites. Even I'm trying hard 
 
 This project contains 3 apache2 website snippets. 
 
-# white-list-site.conf
+# allow-list-site.conf
 This example needs a whitelisted ip to operate. 
 new ip's are send to home assistant where access can be granted or denied.
 
-# black-list-site.conf
+# deny-list-site.conf
 This example allows all access unless the ip is on the blacklist.
 
 # honey-pot.conf
